@@ -108,7 +108,7 @@ $(document).ready(function() {
     var radJitter = 1;
     var speedJitter = 1;
     var canvasBg = document.getElementById('can-bg')
-      , bg
+      , bg = canvasBg.getContext('2d')
       , bgWidth
       , bgHeight
       , bgRadius;
@@ -127,12 +127,18 @@ $(document).ready(function() {
         bgHeight = window.innerHeight;
         canvasBg.width = bgWidth;
         canvasBg.height = bgHeight;
-        console.log(bgHeight);
         bgRadius = Math.floor(bgHeight / 2);
-        bg = canvasBg.getContext('2d');
     }
 
     initSize();
+
+    window.addEventListener('resize', function() {
+        initSize();
+    });
+
+    window.addEventListener('rotate', function() {
+        initSize();
+    });
 
     for (var i = 0; i < 400; i++) {
         cirs.push(Circle(bgWidth, bgHeight, bgRadius, 40));
