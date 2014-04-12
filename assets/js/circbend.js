@@ -52,6 +52,7 @@ Circle.prototype.init = function(w, h, r, v) {
 		y : rand(v) - Math.floor(v/2)
 	};
 }
+// testing a commit on other machine
 var cirs = [];
 
 function randoHexColor() {
