@@ -13,6 +13,7 @@
     "passport": "0.2.0",
     "connect-flash": "0.1.1",
     "passport-local": "1.0.0",
-    "ejs-locals": "1.0.2"
+    "ejs-locals": "1.0.2",
+    "touch-polyfill": "git://github.com/rvangundy/touch-polyfill"
   }
 }
