@@ -38,6 +38,8 @@ function addEvents(canvas, moveHandler){
         var touches = evt.targetTouches;
         var touch = evt.changedTouches[0];
 
+        evt.preventDefault();
+
         canvas.addEventListener('touchmove', moveHandler);
 
         startX = touch.pageX;
@@ -52,6 +54,8 @@ function addEvents(canvas, moveHandler){
         var touch = evt.changedTouches[0];
         var x = touch.pageX;
         var y = touch.pageY;
+
+        evt.preventDefault();
 
         canvas.removeEventListener('touchmove', moveHandler);
         canvas.removeEventListener('touchend', handleTouchEnd);
@@ -113,6 +117,8 @@ $(document).ready(function() {
         var touch = evt.changedTouches[0];
         var x = jitter = touch.pageX / window.innerWidth;
         var y = window.innerHeight / touch.pageY;
+
+        evt.preventDefault();
     });
 
     function initSize() {
