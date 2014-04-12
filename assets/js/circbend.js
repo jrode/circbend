@@ -30,7 +30,7 @@
         };
 }());
 
-function addEvents(canvas){
+function addEvents(canvas, moveHandler){
     var startX, startY;
 
     // Touch just started
@@ -38,22 +38,12 @@ function addEvents(canvas){
         var touches = evt.targetTouches;
         var touch = evt.changedTouches[0];
 
-        canvas.addEventListener('touchmove', handleTouchMove);
+        canvas.addEventListener('touchmove', moveHandler);
 
         startX = touch.pageX;
         startY = touch.pageY;
 
         // Do touch start stuff here
-    }
-
-    // Touch moved
-    function handleTouchMove(evt) {
-        var touches = evt.targetTouches;
-        var touch = evt.changedTouches[0];
-        var x = touch.pageX;
-        var y = touch.pageY;
-
-        // Do touch move stuff here
     }
 
     // Touch ended
@@ -63,7 +53,7 @@ function addEvents(canvas){
         var x = touch.pageX;
         var y = touch.pageY;
 
-        canvas.removeEventListener('touchmove', handleTouchMove);
+        canvas.removeEventListener('touchmove', moveHandler);
         canvas.removeEventListener('touchend', handleTouchEnd);
 
         // Do touch end stuff here
@@ -118,7 +108,14 @@ $(document).ready(function() {
       , bgHeight
       , bgRadius;
 
-    addEvents(canvasBg);
+    addEvents(canvasBg, function(evt) {
+        var touches = evt.targetTouches;
+        var touch = evt.changedTouches;
+        var x = touch.pageX;
+        var y = touch.pageY;
+
+        // Touch just moved
+    });
 
     function initSize() {
         bgWidth = document.body.clientWidth;
