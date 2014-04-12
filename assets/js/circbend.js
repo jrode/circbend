@@ -154,8 +154,8 @@ $(document).ready(function() {
             cirs[i].x += cirs[i].velocity.x * speedJitter;
             cirs[i].y += cirs[i].velocity.y * speedJitter;
             var rad = cirs[i].radius;
-            cirs[i].color.b *= colorJitter;
-            cirs[i].color.a *= alphaJitter;
+            cirs[i].color.b += (128 - cirs[i].color.b) * colorJitter;
+            cirs[i].color.a += (0.5 - cirs[i].color.a) * alphaJitter;
             if (cirs[i].x < 0 - rad) cirs[i].x = bgWidth + rad;
             if (cirs[i].y < 0 - rad) cirs[i].y = bgHeight + rad;
             if (cirs[i].x > bgWidth + rad) cirs[i].x = 0 - rad;
