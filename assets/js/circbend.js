@@ -105,7 +105,8 @@ function rand(num) {
 }
 
 $(document).ready(function() {
-    var jitter = 1;
+    var radJitter = 1;
+    var speedJitter = 1;
     var canvasBg = document.getElementById('can-bg')
       , bg
       , bgWidth
@@ -115,8 +116,8 @@ $(document).ready(function() {
     addEvents(canvasBg, function(evt) {
         var touches = evt.targetTouches;
         var touch = evt.changedTouches[0];
-        var x = jitter = touch.pageX / window.innerWidth;
-        var y = window.innerHeight / touch.pageY;
+        var x = radJitter = touch.pageX / window.innerWidth;
+        var y = speedJitter = window.innerHeight / touch.pageY;
 
         evt.preventDefault();
     });
@@ -147,8 +148,8 @@ $(document).ready(function() {
             bg.fill();
 
             // set new position
-            cirs[i].x += cirs[i].velocity.x;
-            cirs[i].y += cirs[i].velocity.y;
+            cirs[i].x += cirs[i].velocity.x * speedJitter;
+            cirs[i].y += cirs[i].velocity.y * speedJitter;
             var rad = cirs[i].radius;
             if (cirs[i].x < 0 - rad) cirs[i].x = bgWidth + rad;
             if (cirs[i].y < 0 - rad) cirs[i].y = bgHeight + rad;
