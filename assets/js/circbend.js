@@ -110,8 +110,8 @@ $(document).ready(function() {
 
     addEvents(canvasBg, function(evt) {
         var touches = evt.targetTouches;
-        var touch = evt.changedTouches;
-        var x = jitter = window.innerWidth / touch.pageX;
+        var touch = evt.changedTouches[0];
+        var x = jitter = touch.pageX / window.innerWidth;
         var y = window.innerHeight / touch.pageY;
     });
 
