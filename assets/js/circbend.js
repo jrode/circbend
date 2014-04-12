@@ -101,7 +101,7 @@ function rand(num) {
 }
 
 $(document).ready(function() {
-
+    var jitter = 1;
     var canvasBg = document.getElementById('can-bg')
       , bg
       , bgWidth
@@ -111,10 +111,8 @@ $(document).ready(function() {
     addEvents(canvasBg, function(evt) {
         var touches = evt.targetTouches;
         var touch = evt.changedTouches;
-        var x = touch.pageX;
-        var y = touch.pageY;
-
-        // Touch just moved
+        var x = jitter = window.innerWidth / touch.pageX;
+        var y = window.innerHeight / touch.pageY;
     });
 
     function initSize() {
@@ -137,7 +135,7 @@ $(document).ready(function() {
         for (var i = 0; i < cirs.length; i++) {
             // draw circle
             bg.beginPath();
-            bg.arc(cirs[i].x, cirs[i].y, cirs[i].radius, 0, 2 * Math.PI, false);
+            bg.arc(cirs[i].x, cirs[i].y, cirs[i].radius * jitter, 0, 2 * Math.PI, false);
             bg.closePath();
             bg.fillStyle = cirs[i].color;
             bg.fill();
