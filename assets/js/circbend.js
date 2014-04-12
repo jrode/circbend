@@ -1,10 +1,5 @@
-// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-// http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
- 
-// requestAnimationFrame polyfill by Erik Möller. fixes from Paul Irish and Tino Zijdel
- 
-// MIT license
- 
+
+// paul irish MIT license
 (function() {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
@@ -77,32 +72,32 @@ function makeClass(){
   };
 }
 
+// random integer between 0 and num
+function rand(num) {
+    return Math.floor(Math.random() * num);
+}
+
 var Circle = makeClass();
 Circle.prototype.init = function(w, h, r, v) {
     this.x = rand(w);
     this.y = rand(h);
     this.radius = rand(r);
-    this.color = randRGBA();
+    this.color = {
+        r : rand(255),
+        g : rand(255),
+        b : rand(255),
+        a : Math.round((Math.random() * 100)) / 100
+    }
     this.velocity = {
         x : rand(v) - Math.floor(v/2),
         y : rand(v) - Math.floor(v/2)
     };
 }
-// testing a commit on other machine
+Circle.prototype.rgba = function() {
+    return 'rgba(' + [this.color.r, this.color.g, this.color.b, this.color.a].join(',') + ')';
+}
+
 var cirs = [];
-
-function randoHexColor() {
-    return Math.random().toString(16).substring(2,8);
-}
-
-function randRGBA() {
-    var nums = [rand(255), rand(255), rand(255), Math.round((Math.random() * 100)) / 100];
-    return 'rgba(' + nums.join(',') + ')';
-}
-
-function rand(num) {
-    return Math.floor(Math.random() * num);
-}
 
 $(document).ready(function() {
     var radJitter = 1;
@@ -123,22 +118,14 @@ $(document).ready(function() {
     });
 
     function initSize() {
-        bgWidth = window.innerWidth;
-        bgHeight = window.innerHeight;
-        canvasBg.width = bgWidth;
-        canvasBg.height = bgHeight;
+        canvasBg.width = bgWidth = window.innerWidth;
+        canvasBg.height = bgHeight = window.innerHeight;
         bgRadius = Math.floor(bgHeight / 2);
     }
 
     initSize();
-
-    window.addEventListener('resize', function() {
-        initSize();
-    });
-
-    window.addEventListener('rotate', function() {
-        initSize();
-    });
+    window.addEventListener('resize', initSize);
+    window.addEventListener('rotate', initSize);
 
     for (var i = 0; i < 400; i++) {
         cirs.push(Circle(bgWidth, bgHeight, bgRadius, 40));
@@ -151,7 +138,7 @@ $(document).ready(function() {
             bg.beginPath();
             bg.arc(cirs[i].x, cirs[i].y, cirs[i].radius * radJitter, 0, 2 * Math.PI, false);
             bg.closePath();
-            bg.fillStyle = cirs[i].color;
+            bg.fillStyle = cirs[i].rgba();
             bg.fill();
 
             // set new position
