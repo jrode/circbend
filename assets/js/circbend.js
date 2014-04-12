@@ -30,6 +30,48 @@
         };
 }());
 
+function addEvents(canvas){
+    var startX, startY;
+
+    // Touch just started
+    function handleTouchStart(evt) {
+        var touches = evt.targetTouches;
+        var touch = evt.changedTouches[0];
+
+        canvas.addEventListener('touchmove', handleTouchMove);
+
+        startX = touch.pageX;
+        startY = touch.pageY;
+
+        // Do touch start stuff here
+    }
+
+    // Touch moved
+    function handleTouchMove(evt) {
+        var touches = evt.targetTouches;
+        var touch = evt.changedTouches[0];
+        var x = touch.pageX;
+        var y = touch.pageY;
+
+        // Do touch move stuff here
+    }
+
+    // Touch ended
+    function handleTouchEnd(evt) {
+        var touches = evt.targetTouches;
+        var touch = evt.changedTouches[0];
+        var x = touch.pageX;
+        var y = touch.pageY;
+
+        canvas.removeEventListener('touchmove', handleTouchMove);
+        canvas.removeEventListener('touchend', handleTouchEnd);
+
+        // Do touch end stuff here
+    }
+
+    canvas.addEventListener('touchstart', handleTouchStart);
+}
+
 // makeClass - By John Resig (MIT Licensed)
 function makeClass(){
   return function(args){
@@ -43,77 +85,79 @@ function makeClass(){
 
 var Circle = makeClass();
 Circle.prototype.init = function(w, h, r, v) {
-	this.x = rand(w);
-	this.y = rand(h);
-	this.radius = rand(r);
-	this.color = randRGBA();
-	this.velocity = {
-		x : rand(v) - Math.floor(v/2),
-		y : rand(v) - Math.floor(v/2)
-	};
+    this.x = rand(w);
+    this.y = rand(h);
+    this.radius = rand(r);
+    this.color = randRGBA();
+    this.velocity = {
+        x : rand(v) - Math.floor(v/2),
+        y : rand(v) - Math.floor(v/2)
+    };
 }
 // testing a commit on other machine
 var cirs = [];
 
 function randoHexColor() {
-	return Math.random().toString(16).substring(2,8);
+    return Math.random().toString(16).substring(2,8);
 }
 
 function randRGBA() {
-	var nums = [rand(255), rand(255), rand(255), Math.round((Math.random() * 100)) / 100];
-	return 'rgba(' + nums.join(',') + ')';
+    var nums = [rand(255), rand(255), rand(255), Math.round((Math.random() * 100)) / 100];
+    return 'rgba(' + nums.join(',') + ')';
 }
 
 function rand(num) {
-	return Math.floor(Math.random() * num);
+    return Math.floor(Math.random() * num);
 }
 
 $(document).ready(function() {
 
-	var canvasBg = document.getElementById('can-bg')
-	  , bg
-	  , bgWidth
-	  , bgHeight
-	  , bgRadius;
+    var canvasBg = document.getElementById('can-bg')
+      , bg
+      , bgWidth
+      , bgHeight
+      , bgRadius;
 
-	function initSize() {
-		bgWidth = document.body.clientWidth;
-		bgHeight = document.body.clientHeight;
-		canvasBg.width = bgWidth;
-		canvasBg.height = bgHeight;
-		bgRadius = Math.floor(bgHeight / 2);
-		bg = canvasBg.getContext('2d');
-	}
+    addEvents(canvasBg);
 
-	initSize();
+    function initSize() {
+        bgWidth = document.body.clientWidth;
+        bgHeight = document.body.clientHeight;
+        canvasBg.width = bgWidth;
+        canvasBg.height = bgHeight;
+        bgRadius = Math.floor(bgHeight / 2);
+        bg = canvasBg.getContext('2d');
+    }
 
-	for (var i = 0; i < 400; i++) {
-		cirs.push(Circle(bgWidth, bgHeight, bgRadius, 40));
-	}
+    initSize();
 
-	function drawCircles() {
-		bg.clearRect(0,0,bgWidth,bgHeight);
-		for (var i = 0; i < cirs.length; i++) {
-			// draw circle
-			bg.beginPath();
-			bg.arc(cirs[i].x, cirs[i].y, cirs[i].radius, 0, 2 * Math.PI, false);
-			bg.closePath();
-			bg.fillStyle = cirs[i].color;
-			bg.fill();
+    for (var i = 0; i < 400; i++) {
+        cirs.push(Circle(bgWidth, bgHeight, bgRadius, 40));
+    }
 
-			// set new position
-			cirs[i].x += cirs[i].velocity.x;
-			cirs[i].y += cirs[i].velocity.y;
-			var rad = cirs[i].radius;
-			if (cirs[i].x < 0 - rad) cirs[i].x = bgWidth + rad;
-			if (cirs[i].y < 0 - rad) cirs[i].y = bgHeight + rad;
-			if (cirs[i].x > bgWidth + rad) cirs[i].x = 0 - rad;
-			if (cirs[i].y > bgHeight + rad) cirs[i].y -= 0 - rad;
-		}
+    function drawCircles() {
+        bg.clearRect(0,0,bgWidth,bgHeight);
+        for (var i = 0; i < cirs.length; i++) {
+            // draw circle
+            bg.beginPath();
+            bg.arc(cirs[i].x, cirs[i].y, cirs[i].radius, 0, 2 * Math.PI, false);
+            bg.closePath();
+            bg.fillStyle = cirs[i].color;
+            bg.fill();
 
-		requestAnimationFrame(drawCircles);
-	}
+            // set new position
+            cirs[i].x += cirs[i].velocity.x;
+            cirs[i].y += cirs[i].velocity.y;
+            var rad = cirs[i].radius;
+            if (cirs[i].x < 0 - rad) cirs[i].x = bgWidth + rad;
+            if (cirs[i].y < 0 - rad) cirs[i].y = bgHeight + rad;
+            if (cirs[i].x > bgWidth + rad) cirs[i].x = 0 - rad;
+            if (cirs[i].y > bgHeight + rad) cirs[i].y -= 0 - rad;
+        }
 
-	drawCircles();
+        requestAnimationFrame(drawCircles);
+    }
+
+    drawCircles();
 
 });
