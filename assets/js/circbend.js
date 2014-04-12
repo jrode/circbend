@@ -122,6 +122,7 @@ $(document).ready(function() {
         bgHeight = document.body.clientHeight;
         canvasBg.width = bgWidth;
         canvasBg.height = bgHeight;
+        console.log(bgHeight);
         bgRadius = Math.floor(bgHeight / 2);
         bg = canvasBg.getContext('2d');
     }
