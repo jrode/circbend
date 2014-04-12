@@ -117,7 +117,7 @@ $(document).ready(function() {
         var touches = evt.targetTouches;
         var touch = evt.changedTouches[0];
         var x = radJitter = touch.pageX / window.innerWidth;
-        var y = speedJitter = window.innerHeight / touch.pageY;
+        var y = speedJitter = touch.pageY / window.innerHeight;
 
         evt.preventDefault();
     });
@@ -142,7 +142,7 @@ $(document).ready(function() {
         for (var i = 0; i < cirs.length; i++) {
             // draw circle
             bg.beginPath();
-            bg.arc(cirs[i].x, cirs[i].y, cirs[i].radius * jitter, 0, 2 * Math.PI, false);
+            bg.arc(cirs[i].x, cirs[i].y, cirs[i].radius * radJitter, 0, 2 * Math.PI, false);
             bg.closePath();
             bg.fillStyle = cirs[i].color;
             bg.fill();
