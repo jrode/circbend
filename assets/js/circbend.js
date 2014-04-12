@@ -38,6 +38,8 @@ function addEvents(canvas, moveHandler){
         var touches = evt.targetTouches;
         var touch = evt.changedTouches[0];
 
+        evt.preventDefault();
+
         canvas.addEventListener('touchmove', moveHandler);
 
         startX = touch.pageX;
@@ -52,6 +54,8 @@ function addEvents(canvas, moveHandler){
         var touch = evt.changedTouches[0];
         var x = touch.pageX;
         var y = touch.pageY;
+
+        evt.preventDefault();
 
         canvas.removeEventListener('touchmove', moveHandler);
         canvas.removeEventListener('touchend', handleTouchEnd);
@@ -101,7 +105,7 @@ function rand(num) {
 }
 
 $(document).ready(function() {
-
+    var jitter = 1;
     var canvasBg = document.getElementById('can-bg')
       , bg
       , bgWidth
@@ -110,16 +114,16 @@ $(document).ready(function() {
 
     addEvents(canvasBg, function(evt) {
         var touches = evt.targetTouches;
-        var touch = evt.changedTouches;
-        var x = touch.pageX;
-        var y = touch.pageY;
+        var touch = evt.changedTouches[0];
+        var x = jitter = touch.pageX / window.innerWidth;
+        var y = window.innerHeight / touch.pageY;
 
-        // Touch just moved
+        evt.preventDefault();
     });
 
     function initSize() {
-        bgWidth = document.body.clientWidth;
-        bgHeight = document.body.clientHeight;
+        bgWidth = window.innerWidth;
+        bgHeight = window.innerHeight;
         canvasBg.width = bgWidth;
         canvasBg.height = bgHeight;
         console.log(bgHeight);
@@ -138,7 +142,7 @@ $(document).ready(function() {
         for (var i = 0; i < cirs.length; i++) {
             // draw circle
             bg.beginPath();
-            bg.arc(cirs[i].x, cirs[i].y, cirs[i].radius, 0, 2 * Math.PI, false);
+            bg.arc(cirs[i].x, cirs[i].y, cirs[i].radius * jitter, 0, 2 * Math.PI, false);
             bg.closePath();
             bg.fillStyle = cirs[i].color;
             bg.fill();
