@@ -71,6 +71,11 @@ function addEvents(canvas, moveHandler){
         canvas.removeEventListener('touchend', handleTouchEnd);
         canvas.removeEventListener('touchcancel', handleTouchEnd);
 
+        lastJitter.radius = (lastJitter.radius + 1) * (currJitter.radius + 1) - 1;
+        lastJitter.speed = (lastJitter.speed + 1) * (currJitter.speed + 1) - 1;
+        currJitter.radius = 0;
+        currJitter.speed = 0;
+
         for (var t = 0; t < touches.length; t++) {
             //console.log('got end touch ' + touches[t].identifier)
             removeTouch(touches[t].identifier);
@@ -116,20 +121,27 @@ Circle.prototype.rgba = function() {
     return 'rgba(' + [this.color.r, this.color.g, this.color.b, this.color.a].join(',') + ')';
 }
 
-var cirs = [];
-var currentTouches = [];
+var cirs = []
+  , currentTouches = []
+  , lastJitter = {
+        radius: 0,
+        speed: 0,
+        color: 0,
+        alpha: 0
+      }
+  , currJitter = {
+        radius: 0,
+        speed: 0,
+        color: 0,
+        alpha: 0
+      };
 
 $(document).ready(function() {
     var canvasBg = document.getElementById('can-bg')
       , bg = canvasBg.getContext('2d')
       , bgWidth
       , bgHeight
-      , bgRadius
-      , radJitter = 1
-      , speedJitter = 1
-      , colorJitter = 0
-      , alphaJitter = 0
-      , jitter = [];
+      , bgRadius;
 
     addEvents(canvasBg, function(evt) {
         var touches = evt.changedTouches;
@@ -141,13 +153,13 @@ $(document).ready(function() {
             touch.jitterY = (touch.startY - touches[t].pageY) / window.innerHeight;
 
             if (t == 0) {
-                radJitter = touch.jitterX + 1; 
-                speedJitter = touch.jitterY + 1;
+                currJitter.radius = touch.jitterX; 
+                currJitter.speed = touch.jitterY;
                 //console.log('speed ' + speedJitter + ', size ' + radJitter);
             }
             if (t == 1) {
-                colorJitter = touch.jitterX;
-                alphaJitter = touch.jitterY;
+                currJitter.color = touch.jitterX;
+                currJitter.alpha = touch.jitterY;
             }
         }
 
@@ -171,19 +183,19 @@ $(document).ready(function() {
     function drawCircles() {
         bg.clearRect(0,0,bgWidth,bgHeight);
         for (var i = 0; i < cirs.length; i++) {
-            // draw circle
+            var radius = cirs[i].radius * (currJitter.radius + 1) * (lastJitter.radius + 1);
             bg.beginPath();
-            bg.arc(cirs[i].x, cirs[i].y, cirs[i].radius * radJitter, 0, 2 * Math.PI, false);
+            bg.arc(cirs[i].x, cirs[i].y, radius, 0, 2 * Math.PI, false);
             bg.closePath();
             bg.fillStyle = cirs[i].rgba();
             bg.fill();
 
-            // set new position
-            cirs[i].x += cirs[i].velocity.x * speedJitter;
-            cirs[i].y += cirs[i].velocity.y * speedJitter;
+            var speedDelta = (currJitter.speed + 1) * (lastJitter.speed + 1);
+            cirs[i].x += cirs[i].velocity.x * speedDelta;
+            cirs[i].y += cirs[i].velocity.y * speedDelta;
             var rad = cirs[i].radius;
-            cirs[i].color.b += (colorJitter > 0 ? 255 - cirs[i].color.b : cirs[i].color.b) * colorJitter;
-            cirs[i].color.a += (alphaJitter > 0 ? 1 - cirs[i].color.a : cirs[i].color.a) * alphaJitter;
+            //cirs[i].color.b += (colorJitter > 0 ? 255 - cirs[i].color.b : cirs[i].color.b) * colorJitter;
+            //cirs[i].color.a += (alphaJitter > 0 ? 1 - cirs[i].color.a : cirs[i].color.a) * alphaJitter;
             if (cirs[i].x < 0 - rad) cirs[i].x = bgWidth + rad;
             if (cirs[i].y < 0 - rad) cirs[i].y = bgHeight + rad;
             if (cirs[i].x > bgWidth + rad) cirs[i].x = 0 - rad;
