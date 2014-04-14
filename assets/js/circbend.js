@@ -40,6 +40,11 @@ function addEvents(canvas, moveHandler){
         startX = touch.pageX;
         startY = touch.pageY;
 
+        tchs[touch.identifier] = {
+            x: startX,
+            y: startY
+        };
+
         // Do touch start stuff here
     }
 
@@ -98,6 +103,7 @@ Circle.prototype.rgba = function() {
 }
 
 var cirs = [];
+var tchs = [];
 
 $(document).ready(function() {
     var canvasBg = document.getElementById('can-bg')
@@ -107,8 +113,8 @@ $(document).ready(function() {
       , bgRadius
       , radJitter = 1
       , speedJitter = 1
-      , colorJitter = 1
-      , alphaJitter = 1;
+      , colorJitter = 0
+      , alphaJitter = 0;
 
     addEvents(canvasBg, function(evt) {
         var touches = evt.targetTouches;
@@ -116,10 +122,11 @@ $(document).ready(function() {
         var x = radJitter = touch.pageX / window.innerWidth;
         var y = speedJitter = touch.pageY / window.innerHeight;
 
+
         if (evt.changedTouches.length == 2) {
             var touch2 = evt.changedTouches[1];
-            colorJitter = touch2.pageX / window.innerWidth;
-            alphaJitter = touch2.pageY / window.innerHeight;
+            colorJitter = (tchs[touch2.identifier].x - touch2.pageX) / window.innerWidth;
+            alphaJitter = (tchs[touch2.identifier].y - touch2.pageY) / window.innerHeight;
         }
 
 
@@ -154,8 +161,8 @@ $(document).ready(function() {
             cirs[i].x += cirs[i].velocity.x * speedJitter;
             cirs[i].y += cirs[i].velocity.y * speedJitter;
             var rad = cirs[i].radius;
-            //cirs[i].color.b += (255 - cirs[i].color.b) * colorJitter;
-            //cirs[i].color.a += (1 - cirs[i].color.a) * alphaJitter;
+            cirs[i].color.b += (colorJitter > 0 ? 255 - cirs[i].color.b : cirs[i].color.b) * colorJitter;
+            cirs[i].color.a += (alphaJitter > 0 ? 1 - cirs[i].color.a : cirs[i].color.a) * alphaJitter;
             if (cirs[i].x < 0 - rad) cirs[i].x = bgWidth + rad;
             if (cirs[i].y < 0 - rad) cirs[i].y = bgHeight + rad;
             if (cirs[i].x > bgWidth + rad) cirs[i].x = 0 - rad;
