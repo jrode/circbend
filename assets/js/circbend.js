@@ -71,10 +71,15 @@ function addEvents(canvas, moveHandler){
         canvas.removeEventListener('touchend', handleTouchEnd);
         canvas.removeEventListener('touchcancel', handleTouchEnd);
 
-        lastJitter.radius = (lastJitter.radius + 1) * (currJitter.radius + 1) - 1;
-        lastJitter.speed = (lastJitter.speed + 1) * (currJitter.speed + 1) - 1;
-        currJitter.radius = 0;
-        currJitter.speed = 0;
+        for (var key in lastJitter) {
+            lastJitter[key] = (lastJitter[key] + 1) * (currJitter[key] + 1) - 1;
+            currJitter[key] = 0;
+        }
+
+        //lastJitter.radius = (lastJitter.radius + 1) * (currJitter.radius + 1) - 1;
+        //lastJitter.speed = (lastJitter.speed + 1) * (currJitter.speed + 1) - 1;
+        //currJitter.radius = 0;
+        //currJitter.speed = 0;
 
         for (var t = 0; t < touches.length; t++) {
             //console.log('got end touch ' + touches[t].identifier)
@@ -125,7 +130,7 @@ var cirs = []
   , currentTouches = []
   , lastJitter = {
         radius: 0,
-        speed: 0,
+        speed: 0.5,
         color: 0,
         alpha: 0
       }
@@ -149,13 +154,12 @@ $(document).ready(function() {
         // set all touch jitters
         for (var t = 0; t < touches.length; t++) {
             var touch = currentTouches[findTouch(touches[t].identifier)];
-            touch.jitterX = (touch.startX - touches[t].pageX) / window.innerWidth;
-            touch.jitterY = (touch.startY - touches[t].pageY) / window.innerHeight;
+            touch.jitterX = (touches[t].pageX - touch.startX) / window.innerWidth;
+            touch.jitterY = (touches[t].pageY - touch.startY) / window.innerHeight;
 
             if (t == 0) {
-                currJitter.radius = touch.jitterX; 
-                currJitter.speed = touch.jitterY;
-                //console.log('speed ' + speedJitter + ', size ' + radJitter);
+                currJitter.speed = touch.jitterX; 
+                currJitter.radius = touch.jitterY;
             }
             if (t == 1) {
                 currJitter.color = touch.jitterX;
@@ -180,26 +184,34 @@ $(document).ready(function() {
         cirs.push(Circle(bgWidth, bgHeight, bgRadius, 40));
     }
 
+    function reportValues() {
+        setTimeout(function() {
+            console.log('speed ∆ ' + (currJitter.speed + lastJitter.speed));
+            reportValues();
+        }, 1000);
+    }
+
     function drawCircles() {
         bg.clearRect(0,0,bgWidth,bgHeight);
         for (var i = 0; i < cirs.length; i++) {
-            var radius = cirs[i].radius * (currJitter.radius + 1) * (lastJitter.radius + 1);
+            var rad = cirs[i].radius * (currJitter.radius + 1) * (lastJitter.radius + 1);
             bg.beginPath();
-            bg.arc(cirs[i].x, cirs[i].y, radius, 0, 2 * Math.PI, false);
+            bg.arc(cirs[i].x, cirs[i].y, rad, 0, 2 * Math.PI, false);
             bg.closePath();
             bg.fillStyle = cirs[i].rgba();
             bg.fill();
 
-            var speedDelta = (currJitter.speed + 1) * (lastJitter.speed + 1);
+            var speedDelta = currJitter.speed + lastJitter.speed;
             cirs[i].x += cirs[i].velocity.x * speedDelta;
             cirs[i].y += cirs[i].velocity.y * speedDelta;
-            var rad = cirs[i].radius;
-            //cirs[i].color.b += (colorJitter > 0 ? 255 - cirs[i].color.b : cirs[i].color.b) * colorJitter;
-            //cirs[i].color.a += (alphaJitter > 0 ? 1 - cirs[i].color.a : cirs[i].color.a) * alphaJitter;
+            var colorJitter = currJitter.color + lastJitter.color;
+            var alphaJitter = currJitter.alpha + lastJitter.alpha;
+            cirs[i].color.b += (colorJitter > 0 ? 255 - cirs[i].color.b : cirs[i].color.b) * colorJitter;
+            cirs[i].color.a += (alphaJitter > 0 ? 1 - cirs[i].color.a : cirs[i].color.a) * alphaJitter;
             if (cirs[i].x < 0 - rad) cirs[i].x = bgWidth + rad;
             if (cirs[i].y < 0 - rad) cirs[i].y = bgHeight + rad;
             if (cirs[i].x > bgWidth + rad) cirs[i].x = 0 - rad;
-            if (cirs[i].y > bgHeight + rad) cirs[i].y -= 0 - rad;
+            if (cirs[i].y > bgHeight + rad) cirs[i].y = 0 - rad;
         }
 
         requestAnimationFrame(drawCircles);
