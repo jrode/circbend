@@ -25,42 +25,56 @@
         };
 }());
 
+function findTouch(id) {
+    for (var i = 0; i < currentTouches.length; i++) {
+        if (currentTouches[i].id === id) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function removeTouch(id) {
+    var i = findTouch(id);
+    if (i > -1) currentTouches.splice(i, 1);
+}
+
 function addEvents(canvas, moveHandler){
-    var startX, startY;
 
     // Touch just started
     function handleTouchStart(evt) {
-        var touches = evt.targetTouches;
-        var touch = evt.changedTouches[0];
-
+        var touches = evt.changedTouches;
         evt.preventDefault();
 
         canvas.addEventListener('touchmove', moveHandler);
+        canvas.addEventListener('touchend', handleTouchEnd);
+        canvas.addEventListener('touchcancel', handleTouchEnd);
 
-        startX = touch.pageX;
-        startY = touch.pageY;
-
-        tchs[touch.identifier] = {
-            x: startX,
-            y: startY
-        };
-
-        // Do touch start stuff here
+        for (var t = 0; t < touches.length; t++) {
+            console.log('got start touch ' + touches[t].identifier)
+            currentTouches.push({
+                id: touches[t].identifier,
+                startX: touches[t].pageX,
+                startY: touches[t].pageY,
+                jitterX: 0,
+                jitterY: 0
+            });
+        }
     }
 
     // Touch ended
     function handleTouchEnd(evt) {
-        var touches = evt.targetTouches;
-        var touch = evt.changedTouches[0];
-        var x = touch.pageX;
-        var y = touch.pageY;
-
+        var touches = evt.changedTouches;
         evt.preventDefault();
 
         canvas.removeEventListener('touchmove', moveHandler);
         canvas.removeEventListener('touchend', handleTouchEnd);
+        canvas.removeEventListener('touchcancel', handleTouchEnd);
 
-        // Do touch end stuff here
+        for (var t = 0; t < touches.length; t++) {
+            console.log('got end touch ' + touches[t].identifier)
+            removeTouch(touches[t].identifier);
+        }
     }
 
     canvas.addEventListener('touchstart', handleTouchStart);
@@ -103,7 +117,7 @@ Circle.prototype.rgba = function() {
 }
 
 var cirs = [];
-var tchs = [];
+var currentTouches = [];
 
 $(document).ready(function() {
     var canvasBg = document.getElementById('can-bg')
@@ -114,21 +128,28 @@ $(document).ready(function() {
       , radJitter = 1
       , speedJitter = 1
       , colorJitter = 0
-      , alphaJitter = 0;
+      , alphaJitter = 0
+      , jitter = [];
 
     addEvents(canvasBg, function(evt) {
-        var touches = evt.targetTouches;
-        var touch = evt.changedTouches[0];
-        var x = radJitter = touch.pageX / window.innerWidth;
-        var y = speedJitter = touch.pageY / window.innerHeight;
+        var touches = evt.changedTouches;
 
+        // set all touch jitters
+        for (var t = 0; t < touches.length; t++) {
+            var touch = currentTouches[findTouch(touches[t].identifier)];
+            touch.jitterX = (touch.startX - touches[t].pageX) / window.innerWidth;
+            touch.jitterY = (touch.startY - touches[t].pageY) / window.innerHeight;
 
-        if (evt.changedTouches.length == 2) {
-            var touch2 = evt.changedTouches[1];
-            colorJitter = (tchs[touch2.identifier].x - touch2.pageX) / window.innerWidth;
-            alphaJitter = (tchs[touch2.identifier].y - touch2.pageY) / window.innerHeight;
+            if (t == 0) {
+                radJitter = (touch.jitterX + 1) * 3;
+                speedJitter = (touch.jitterY + 1) * 3;
+                console.log('speed ' + speedJitter + ', size ' + radJitter);
+            }
+            if (t == 1) {
+                colorJitter = touch.jitterX;
+                alphaJitter = touch.jitterY;
+            }
         }
-
 
         evt.preventDefault();
     });
