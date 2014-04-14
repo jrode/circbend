@@ -131,7 +131,7 @@ Circle.prototype.rgba = function() {
 var cirs = []
   , currentTouches = []
   , lastJitter = {
-        radius: 0,
+        radius: -0.5,
         speed: 0.5,
         color: 0,
         alpha: 0
@@ -208,8 +208,8 @@ $(document).ready(function() {
             cirs[i].y += cirs[i].velocity.y * speedDelta;
             var colorJitter = currJitter.color;
             var alphaJitter = currJitter.alpha;
-            cirs[i].color.b += (colorJitter > 0 ? 255 - cirs[i].color.b : cirs[i].color.b) * colorJitter;
-            cirs[i].color.a += (alphaJitter > 0 ? 1 - cirs[i].color.a : cirs[i].color.a) * alphaJitter;
+            //cirs[i].color.b += (colorJitter > 0 ? 255 - cirs[i].color.b : cirs[i].color.b) * colorJitter;
+            //cirs[i].color.a += (alphaJitter > 0 ? 1 - cirs[i].color.a : cirs[i].color.a) * alphaJitter;
             if (cirs[i].x < 0 - rad) cirs[i].x = bgWidth + rad;
             if (cirs[i].y < 0 - rad) cirs[i].y = bgHeight + rad;
             if (cirs[i].x > bgWidth + rad) cirs[i].x = 0 - rad;
