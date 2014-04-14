@@ -71,15 +71,17 @@ function addEvents(canvas, moveHandler){
         canvas.removeEventListener('touchend', handleTouchEnd);
         canvas.removeEventListener('touchcancel', handleTouchEnd);
 
+        /*
         for (var key in lastJitter) {
             lastJitter[key] = (lastJitter[key] + 1) * (currJitter[key] + 1) - 1;
             currJitter[key] = 0;
         }
+        */
 
-        //lastJitter.radius = (lastJitter.radius + 1) * (currJitter.radius + 1) - 1;
-        //lastJitter.speed = (lastJitter.speed + 1) * (currJitter.speed + 1) - 1;
-        //currJitter.radius = 0;
-        //currJitter.speed = 0;
+        lastJitter.radius = (lastJitter.radius + 1) * (currJitter.radius + 1) - 1;
+        lastJitter.speed = (lastJitter.speed + 1) * (currJitter.speed + 1) - 1;
+        currJitter.radius = 0;
+        currJitter.speed = 0;
 
         for (var t = 0; t < touches.length; t++) {
             //console.log('got end touch ' + touches[t].identifier)
@@ -204,8 +206,8 @@ $(document).ready(function() {
             var speedDelta = currJitter.speed + lastJitter.speed;
             cirs[i].x += cirs[i].velocity.x * speedDelta;
             cirs[i].y += cirs[i].velocity.y * speedDelta;
-            var colorJitter = currJitter.color + lastJitter.color;
-            var alphaJitter = currJitter.alpha + lastJitter.alpha;
+            var colorJitter = currJitter.color;
+            var alphaJitter = currJitter.alpha;
             cirs[i].color.b += (colorJitter > 0 ? 255 - cirs[i].color.b : cirs[i].color.b) * colorJitter;
             cirs[i].color.a += (alphaJitter > 0 ? 1 - cirs[i].color.a : cirs[i].color.a) * alphaJitter;
             if (cirs[i].x < 0 - rad) cirs[i].x = bgWidth + rad;
