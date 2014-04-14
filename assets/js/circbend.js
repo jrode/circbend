@@ -51,7 +51,7 @@ function addEvents(canvas, moveHandler){
         canvas.addEventListener('touchcancel', handleTouchEnd);
 
         for (var t = 0; t < touches.length; t++) {
-            console.log('got start touch ' + touches[t].identifier)
+            //console.log('got start touch ' + touches[t].identifier)
             currentTouches.push({
                 id: touches[t].identifier,
                 startX: touches[t].pageX,
@@ -72,7 +72,7 @@ function addEvents(canvas, moveHandler){
         canvas.removeEventListener('touchcancel', handleTouchEnd);
 
         for (var t = 0; t < touches.length; t++) {
-            console.log('got end touch ' + touches[t].identifier)
+            //console.log('got end touch ' + touches[t].identifier)
             removeTouch(touches[t].identifier);
         }
     }
@@ -141,9 +141,9 @@ $(document).ready(function() {
             touch.jitterY = (touch.startY - touches[t].pageY) / window.innerHeight;
 
             if (t == 0) {
-                radJitter = (touch.jitterX + 1) * 3;
-                speedJitter = (touch.jitterY + 1) * 3;
-                console.log('speed ' + speedJitter + ', size ' + radJitter);
+                radJitter += radJitter * touch.jitterX; 
+                speedJitter += speedJitter * touch.jitterY;
+                //console.log('speed ' + speedJitter + ', size ' + radJitter);
             }
             if (t == 1) {
                 colorJitter = touch.jitterX;
