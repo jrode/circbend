@@ -141,8 +141,8 @@ $(document).ready(function() {
             touch.jitterY = (touch.startY - touches[t].pageY) / window.innerHeight;
 
             if (t == 0) {
-                radJitter += radJitter * touch.jitterX; 
-                speedJitter += speedJitter * touch.jitterY;
+                radJitter = touch.jitterX + 1; 
+                speedJitter = touch.jitterY + 1;
                 //console.log('speed ' + speedJitter + ', size ' + radJitter);
             }
             if (t == 1) {
