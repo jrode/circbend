@@ -92,40 +92,34 @@ function addEvents(canvas, moveHandler){
   canvas.addEventListener('touchstart', handleTouchStart);
 }
 
-// makeClass - By John Resig (MIT Licensed)
-function makeClass(){
-  return function(args){
-  if ( this instanceof arguments.callee ) {
-    if ( typeof this.init == "function" )
-    this.init.apply( this, args.callee ? args : arguments );
-  } else
-    return new arguments.callee( arguments );
-  };
-}
 
 // random integer between 0 and num
 function rand(num) {
   return Math.floor(Math.random() * num);
 }
 
-var Circle = makeClass();
-Circle.prototype.init = function(w, h, r, v) {
-  this.x = rand(w);
-  this.y = rand(h);
-  this.radius = rand(r);
-  this.color = {
+function makeCircle(w, h, r, v) {
+  var circle = {};
+  circle.x = rand(w);
+  circle.y = rand(h);
+  circle.radius = rand(r);
+  circle.color = {
     r : rand(255),
     g : rand(255),
     b : rand(255),
     a : Math.round((Math.random() * 100)) / 100
-  }
-  this.velocity = {
+  };
+  circle.rgba = 'rgba(' + [
+      circle.color.r,
+      circle.color.g,
+      circle.color.b,
+      circle.color.a
+    ].join(',') + ')';
+  circle.velocity = {
     x : rand(v) - Math.floor(v/2),
     y : rand(v) - Math.floor(v/2)
   };
-}
-Circle.prototype.rgba = function() {
-  return 'rgba(' + [this.color.r, this.color.g, this.color.b, this.color.a].join(',') + ')';
+  return circle;
 }
 
 var cirs = []
@@ -183,7 +177,7 @@ var cirs = []
   window.addEventListener('rotate', initSize);
 
   for (var i = 0; i < 400; i++) {
-    cirs.push(Circle(bgWidth, bgHeight, bgRadius, 40));
+    cirs.push(makeCircle(bgWidth, bgHeight, bgRadius, 40));
   }
 
   function reportValues() {
@@ -200,7 +194,7 @@ var cirs = []
       bg.beginPath();
       bg.arc(cirs[i].x, cirs[i].y, rad, 0, 2 * Math.PI, false);
       bg.closePath();
-      bg.fillStyle = cirs[i].rgba();
+      bg.fillStyle = cirs[i].rgba;
       bg.fill();
 
       var speedDelta = currJitter.speed + lastJitter.speed;
